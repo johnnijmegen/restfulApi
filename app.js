@@ -26,21 +26,52 @@ mongoose.connect("mongodb://127.0.0.1:27017/wikiDB", {
 
 const articleSchema = new mongoose.Schema({
   title: String,
-  constent: String,
+  content: String,
 });
 
 const Article = new mongoose.model("article", articleSchema);
 
-// Create the GET routes.
-app.get("/articles", (req, res) => {
-  Article.find(function (err, foundArticles) {
-    if (!err) {
-      res.send(foundArticles);
-    } else {
-      console.log(err);
-    }
+app
+  //  If u need multiple routes like post/get/delete for 1 item.
+  .route("/articles")
+  // Get route
+  .get((req, res) => {
+    Article.find(function (err, foundArticles) {
+      if (!err) {
+        res.send(foundArticles);
+      } else {
+        console.log(err);
+      }
+    });
+  })
+  // Post route
+  .post((req, res) => {
+    console.log(req.body.title);
+    console.log(req.body.content);
+
+    const newArticle = new Article({
+      title: req.body.title,
+      content: req.body.content,
+    });
+
+    newArticle.save((err) => {
+      if (!err) {
+        res.send("succesfully added new article");
+      } else {
+        res.send(err);
+      }
+    });
+  })
+  // Delete
+  .delete((req, res) => {
+    Article.deleteMany((err) => {
+      if (!err) {
+        res.send("deleted articles!");
+      } else {
+        res.send(err);
+      }
+    });
   });
-});
 
 // Let app listen to port.
 app.listen(3000, () => {

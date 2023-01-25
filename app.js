@@ -31,6 +31,7 @@ const articleSchema = new mongoose.Schema({
 
 const Article = new mongoose.model("article", articleSchema);
 
+// ////////////////////////// REQ ALL ARTICLES
 app
   //  If u need multiple routes like post/get/delete for 1 item.
   .route("/articles")
@@ -44,11 +45,10 @@ app
       }
     });
   })
+
   // Post route
   .post((req, res) => {
-    console.log(req.body.title);
-    console.log(req.body.content);
-
+    // IMPORTANT send x-www-form-urlencoded
     const newArticle = new Article({
       title: req.body.title,
       content: req.body.content,
@@ -62,6 +62,7 @@ app
       }
     });
   })
+
   // Delete
   .delete((req, res) => {
     Article.deleteMany((err) => {
@@ -71,6 +72,34 @@ app
         res.send(err);
       }
     });
+  });
+
+// //////////////////////// Specifieke route
+app
+  .route("/articles/:articleTitle")
+
+  .get((req, res) => {
+    // Space is %20
+    Article.findOne({ title: req.params.articleTitle }, (err, foundArticle) => {
+      if (foundArticle) {
+        res.send(foundArticle);
+      } else {
+        res.send("No articles found!");
+      }
+    });
+  })
+
+  // UPDATING specifick, by updatemany
+  .put((req, res) => {
+    Article.updateOne(
+      { title: req.params.articleTitle },
+      { title: req.body.title, content: req.body.content },
+      (err) => {
+        if (!err) {
+          res.send("succesfully updated");
+        }
+      }
+    );
   });
 
 // Let app listen to port.

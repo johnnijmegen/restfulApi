@@ -100,6 +100,28 @@ app
         }
       }
     );
+  })
+
+  .patch((req, res) => {
+    Article.updateOne(
+      { title: req.params.articleTitle },
+      { $set: req.body },
+      (err) => {
+        if (!err) {
+          res.send("succesfully updated patch progress");
+        }
+      }
+    );
+  })
+
+  .delete((req, res) => {
+    Article.deleteMany({ title: req.params.articleTitle }, (err) => {
+      if (!err) {
+        res.send("Article deleted!");
+      } else {
+        res.send(err);
+      }
+    });
   });
 
 // Let app listen to port.
